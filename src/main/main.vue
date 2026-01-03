@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :locale="zhCN" :theme="theme === 'dark' ? darkTheme : lightTheme "
+  <n-config-provider :locale="zhCN" :theme="theme === 'dark' ? darkTheme : null "
                      :theme-overrides="themeOverrides">
     <n-dialog-provider>
       <n-message-provider :placement="'bottom'">
@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import {darkTheme, lightTheme, NConfigProvider, NDialogProvider, NMessageProvider, zhCN} from "naive-ui";
+import {darkTheme, NConfigProvider, NDialogProvider, NMessageProvider, zhCN} from "naive-ui";
 import {themeOverrides} from "./utils/theme.ts";
 import assistant from "./index.vue";
 

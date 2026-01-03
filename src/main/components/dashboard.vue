@@ -40,7 +40,7 @@
   </header>
   <!--设置抽屉-->
   <n-drawer
-      style="border-top-left-radius: 0.5rem;border-top-right-radius: 0.5rem"
+      style="border-radius: 0.5rem"
       v-model:show="isShowDrawer"
       :placement="'bottom'"
       :auto-focus="false"

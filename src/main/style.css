@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+.main {
+    height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+    padding: .5rem .5rem 3.5rem .5rem;
+    position: relative;
+}
+
+.mainContent {
+    height: 616px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.dragDiv {
+    width: 100vw;
+    height: 30px;
+    position: absolute;
+    top: -8px;
+    left: -8px;
+}

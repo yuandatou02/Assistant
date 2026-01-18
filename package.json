@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@tauri-apps/plugin-http": "^2.5.6",
+    "@tauri-apps/plugin-process": "^2.3.1",
     "@types/node": "^24.10.1",
     "@vicons/tabler": "^0.13.0",
     "@vitejs/plugin-vue": "^6.0.1",

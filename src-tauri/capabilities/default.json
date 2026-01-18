@@ -13,8 +13,10 @@
     "core:window:allow-close",
     "core:window:allow-is-visible",
     "core:window:allow-start-dragging",
+    "core:window:allow-minimize",
     "core:webview:allow-create-webview-window",
     "http:default",
+    "process:default",
     {
       "identifier": "http:default",
       "allow": [

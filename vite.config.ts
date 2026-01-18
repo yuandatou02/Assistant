@@ -2,12 +2,16 @@ import {defineConfig} from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
+import packageInfo from "./package.json";
 
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [vue(), tailwindcss()],
+    define: {
+        __APP_VERSION__: JSON.stringify(packageInfo.version),
+    },
     clearScreen: false,
     server: {
         port: 1420,

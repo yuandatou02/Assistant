@@ -2,7 +2,10 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "enables the default permissions",
-  "windows": ["background", "mainWindow"],
+  "windows": [
+    "background",
+    "mainWindow"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-show",
@@ -10,6 +13,15 @@
     "core:window:allow-close",
     "core:window:allow-is-visible",
     "core:window:allow-start-dragging",
-    "core:webview:allow-create-webview-window"
+    "core:webview:allow-create-webview-window",
+    "http:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://*.myqcloud.com"
+        }
+      ]
+    }
   ]
 }

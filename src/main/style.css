@@ -33,3 +33,11 @@ body {
     top: -8px;
     left: -8px;
 }
+
+.mainContent {
+    height: 616px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}

@@ -17,6 +17,7 @@
     "core:webview:allow-create-webview-window",
     "http:default",
     "process:default",
+    "shell:allow-open",
     {
       "identifier": "http:default",
       "allow": [

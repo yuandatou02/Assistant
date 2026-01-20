@@ -20,3 +20,34 @@ pub(crate) enum ClientInfoError {
     #[error("无法从进程参数中解析API认证令牌")]
     AuthTokenNotFound,
 }
+
+/// LCU WebSocket错误类型枚举
+///
+/// 定义了与LCU (League Client Update) WebSocket连接相关的各种错误情况
+/// 实现了Debug、Clone和Error trait，便于错误处理和传播
+#[derive(Debug, Clone, Error)]
+pub enum LcuWebsocketError {
+    /// LCU API不可用错误
+    ///
+    /// 当LCU API服务无法访问时返回此错误，包含具体的错误描述信息
+    #[error("LCU API not available: {0}")]
+    LcuNotAvailable(String),
+
+    /// 认证错误
+    ///
+    /// 当WebSocket连接认证失败时返回此错误
+    #[error("Authentication error")]
+    AuthError,
+
+    /// 消息发送错误
+    ///
+    /// 当向WebSocket连接发送消息失败时返回此错误
+    #[error("Error sending message")]
+    SendError,
+
+    /// 连接断开错误
+    ///
+    /// 当WebSocket连接意外断开时返回此错误，包含断开原因的描述信息
+    #[error("Websocket disconnected: {0}")]
+    Disconnected(String),
+}

@@ -1,3 +1,7 @@
+pub mod lcu_event;
+mod listener;
+
+use crate::lcu::listener::listen_client;
 use crate::shaco::rest::RestClient;
 use crate::shaco::utils::get_client_info;
 use log::{error, info};
@@ -13,6 +17,12 @@ fn get_client() -> Result<&'static RestClient, String> {
     REST_CLIENT
         .get()
         .ok_or_else(|| "REST_CLIENT没有初始化!".to_string())
+}
+#[tauri::command]
+pub fn start_listener(app: AppHandle) {
+    tokio::spawn(async move {
+        listen_client(app).await;
+    });
 }
 
 /// 获取游戏路径
@@ -36,7 +46,7 @@ pub async fn get_game_path() -> Result<String, Value> {
         .map_err(|_| Value::Null)?
         .as_str()
         .expect("路径转换失败!")
-        .replace("LeagueClient", r"TCLS\\client.exe");
+        .replace("LeagueClient", r"TCLS\client.exe");
 
     // 记录获取到的游戏路径信息
     info!("获取到的游戏路径为:{}", game_path);

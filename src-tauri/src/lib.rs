@@ -1,7 +1,7 @@
 mod lcu;
 mod shaco;
 
-use lcu::{get_game_path, listen_client_start, start_game};
+use lcu::{get_game_path, listen_client_start, start_game, start_listener};
 #[tokio::main]
 pub async fn run() {
     tauri::Builder::default()
@@ -18,7 +18,8 @@ pub async fn run() {
         .invoke_handler(tauri::generate_handler![
             start_game,
             listen_client_start,
-            get_game_path
+            get_game_path,
+            start_listener
         ])
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_process::init())

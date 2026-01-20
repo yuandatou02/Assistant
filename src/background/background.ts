@@ -38,6 +38,7 @@ class Background {
                 clearInterval(lcuSuccess);
                 setTimeout(() => {
                     this.gameFlow.sendStartEvent();
+                    invoke("start_listener");
                 }, 500);
             }
             elapsedTime += intervalTime;

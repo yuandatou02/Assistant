@@ -78,7 +78,7 @@ pub(crate) fn get_client_info() -> Result<(String, String), ClientInfoError> {
 /// 返回配置好的reqwest::Client实例
 pub(crate) fn build_request_client(auth_token: Option<String>) -> reqwest::Client {
     // 加载自定义根证书用于SSL验证
-    let cert = Certificate::from_pem(include_bytes!("riotgames.pem")).expect("加载证书失败!");
+    let cert = Certificate::from_pem(include_bytes!("./riotgames.pem")).expect("加载证书失败!");
 
     // 创建并配置请求头，包括可选的认证信息
     let mut headers = header::HeaderMap::new();

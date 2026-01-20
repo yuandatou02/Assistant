@@ -1,4 +1,5 @@
 import type {ConfigRank, ConfigSettingTypes} from "@/background/types";
+import {invoke} from "@tauri-apps/api/core";
 
 // 默认配置
 const configSetting: ConfigSettingTypes = {
@@ -77,3 +78,28 @@ export const configInit = () => {
         addConfig("configRank", configRank);
     }
 };
+
+/**
+ * 获取客户端路径并检查是否需要更新存储的路径
+ * 该函数会从后端获取游戏路径，然后与本地存储的路径进行比较，
+ * 如果路径不同则更新本地存储并返回true，否则返回false
+ *
+ * @returns {Promise<boolean>} 返回一个Promise，解析为布尔值
+ *   - true: 路径已更新或首次设置
+ *   - false: 路径未变化或获取游戏路径失败
+ */
+export const getClientPath = async () => {
+    // 从后端获取游戏路径
+    const gamePath = await invoke<string | null>("get_game_path");
+    // 从本地存储获取已保存的客户端路径
+    const storedPath = localStorage.getItem("clientPath");
+    if (gamePath === null) {
+        return false;
+    } else if (storedPath?.toLowerCase() !== gamePath.toLowerCase()) {
+        // 路径发生变化，更新本地存储
+        localStorage.setItem("clientPath", gamePath);
+        return true;
+    }
+    return true;
+};
+

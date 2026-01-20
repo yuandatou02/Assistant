@@ -1,10 +1,14 @@
 import {createMainWindows} from "./utils/createWindow";
 import {invoke} from "@tauri-apps/api/core";
 import {listen} from "@tauri-apps/api/event";
-import {configInit} from "@/background/utils/config.ts";
+import {configInit, getClientPath} from "@/background/utils/config.ts";
+import {GameFlow} from "@/background/gameFlow.ts";
 
 class Background {
+    private gameFlow: GameFlow;
+
     constructor() {
+        this.gameFlow = new GameFlow();
         createMainWindows();
         configInit();
         this.initializeListeners();
@@ -24,13 +28,24 @@ class Background {
     };
 
     private initAssistant() {
-        console.log("initAssistant");
         const TIME_LIMIT = 3000;
         let elapsedTime = 0;
         const intervalTime = 3000;
 
-        // const lcuSuccess = setInterval(async () => {
-        // });
+        const lcuSuccess = setInterval(async () => {
+            const clientPath = await getClientPath();
+            if (clientPath) {
+                clearInterval(lcuSuccess);
+                setTimeout(() => {
+                    this.gameFlow.sendStartEvent();
+                }, 500);
+            }
+            elapsedTime += intervalTime;
+            if (elapsedTime >= TIME_LIMIT) {
+                clearInterval(lcuSuccess);
+                console.log("超时，客户端未启动");
+            }
+        }, intervalTime);
     }
 
     /**

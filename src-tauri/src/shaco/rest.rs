@@ -28,4 +28,24 @@ impl RestClient {
             request_client,
         })
     }
+
+    /// 发送GET请求到本地指定端口的API端点
+    ///
+    /// # 参数
+    /// * `endpoint` - API端点路径，将与基础URL组合成完整的请求地址
+    ///
+    /// # 返回值
+    /// * `Result<serde_json::Value, reqwest::Error>` - 成功时返回解析的JSON值，失败时返回请求错误
+    ///   如果JSON解析失败，将返回`serde_json::Value::Null`
+    pub async fn get(&self, endpoint: &str) -> Result<serde_json::Value, reqwest::Error> {
+        // 构建完整的请求URL并发送GET请求
+        self.request_client
+            .get(format!("https://127.0.0.1:{}{}", self.port, endpoint))
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await
+            .or_else(|_| Ok(serde_json::Value::Null))
+    }
 }

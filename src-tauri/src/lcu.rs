@@ -2,6 +2,7 @@ use crate::shaco::rest::RestClient;
 use crate::shaco::utils::get_client_info;
 use log::{error, info};
 use once_cell::sync::OnceCell;
+use serde_json::Value;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter};
 
@@ -13,6 +14,45 @@ fn get_client() -> Result<&'static RestClient, String> {
         .get()
         .ok_or_else(|| "REST_CLIENT没有初始化!".to_string())
 }
+
+/// 获取游戏路径
+///
+/// 该函数通过Tauri命令接口异步获取游戏安装路径，并将其转换为特定格式
+///
+/// # Returns
+/// * `Result<String, Value>` - 成功时返回游戏路径字符串，失败时返回Value::Null
+///
+/// # Errors
+/// 当获取客户端失败或HTTP请求失败时返回错误
+#[tauri::command]
+pub async fn get_game_path() -> Result<String, Value> {
+    // 获取HTTP客户端实例
+    let client = get_client()?;
+
+    // 发起HTTP GET请求获取安装目录信息
+    let game_path = client
+        .get("/data-store/v1/install-dir")
+        .await
+        .map_err(|_| Value::Null)?
+        .as_str()
+        .expect("路径转换失败!")
+        .replace("LeagueClient", r"TCLS\\client.exe");
+
+    // 记录获取到的游戏路径信息
+    info!("获取到的游戏路径为:{}", game_path);
+    Ok(game_path)
+}
+
+/// 监听客户端启动状态并初始化REST客户端
+///
+/// 该函数会在后台持续检查客户端信息，直到获取到有效的认证令牌和端口信息，
+/// 或者超过指定的超时时间。成功获取信息后会初始化全局REST客户端并发送状态通知。
+///
+/// # 参数
+/// * `app` - Tauri应用句柄，用于发送事件通知
+///
+/// # 返回值
+/// 无返回值，函数在后台异步执行
 #[tauri::command]
 pub fn listen_client_start(app: AppHandle) {
     tokio::spawn(async move {

@@ -1,2 +1,3 @@
+mod error;
 pub mod rest;
-mod utils;
+pub mod utils;

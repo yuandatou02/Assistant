@@ -24,12 +24,13 @@ class Background {
     };
 
     private initAssistant() {
+        console.log("initAssistant");
         const TIME_LIMIT = 3000;
         let elapsedTime = 0;
         const intervalTime = 3000;
 
-        const lcuSuccess = setInterval(async () => {
-        });
+        // const lcuSuccess = setInterval(async () => {
+        // });
     }
 
     /**

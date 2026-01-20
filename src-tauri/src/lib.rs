@@ -1,9 +1,9 @@
 mod lcu;
 mod shaco;
 
-use lcu::start_game;
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
+use lcu::{listen_client_start, start_game};
+#[tokio::main]
+pub async fn run() {
     tauri::Builder::default()
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -15,7 +15,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![start_game])
+        .invoke_handler(tauri::generate_handler![start_game, listen_client_start])
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())

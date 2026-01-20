@@ -1,5 +1,15 @@
+use crate::shaco::rest::RestClient;
 use log::info;
+use once_cell::sync::OnceCell;
 
+// 定义全局的REST客户端
+static REST_CLIENT: OnceCell<RestClient> = OnceCell::new();
+// 获取全局REST客户端
+fn get_client() -> Result<&'static RestClient, String> {
+    REST_CLIENT
+        .get()
+        .ok_or_else(|| "REST_CLIENT没有初始化!".to_string())
+}
 /// 启动游戏命令函数
 ///
 /// 该函数用于启动指定路径的游戏程序

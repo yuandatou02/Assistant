@@ -1,4 +1,6 @@
 mod lcu;
+mod shaco;
+
 use lcu::start_game;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

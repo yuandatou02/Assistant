@@ -1,7 +1,9 @@
 pub mod lcu_event;
 mod listener;
+mod types;
 
 use crate::lcu::listener::listen_client;
+use crate::lcu::types::summoner_info::{LcuSummonerInfo, SummonerInfo};
 use crate::shaco::rest::RestClient;
 use crate::shaco::utils::get_client_info;
 use log::{error, info};
@@ -23,6 +25,69 @@ pub fn start_listener(app: AppHandle) {
     tokio::spawn(async move {
         listen_client(app).await;
     });
+}
+
+/// 获取召唤师信息
+///
+/// 该函数通过Tauri命令接口，向指定端点发送HTTP请求获取召唤师数据，
+/// 并将LCU格式的数据转换为应用所需的SummonerInfo格式。
+///
+/// # 参数
+/// * `endpoint` - 请求的API端点URL字符串引用
+///
+/// # 返回值
+/// * `Result<SummonerInfo, Value>` - 成功时返回SummonerInfo结构体，失败时返回Value::Null
+///
+/// # 错误处理
+/// 当客户端创建失败、网络请求失败或JSON解析失败时，返回Value::Null
+#[tauri::command]
+pub async fn get_summoner_info(endpoint: &str) -> Result<SummonerInfo, Value> {
+    info!("请求uri为:{}", endpoint);
+
+    // 创建HTTP客户端
+    let client = get_client().map_err(|_| Value::Null)?;
+
+    // 发送GET请求获取原始数据
+    let value = client.get(endpoint).await.map_err(|_| Value::Null)?;
+
+    // 将JSON值解析为LCU召唤师信息结构体
+    let info: LcuSummonerInfo = serde_json::from_value(value).map_err(|_| Value::Null)?;
+
+    info!("获取到的信息为:{:?}", info);
+
+    // 将LCU格式的召唤师信息转换为应用所需的格式
+    Ok(SummonerInfo{
+        privacy:info.privacy,
+        puuid:info.puuid,
+        tag_line: info.tag_line,
+        name:if info.game_name.is_empty() {
+            info.display_name
+        } else {
+            info.game_name
+        },
+        current_id: info.summoner_id,
+        lv: format!("Lv {}",info.summoner_level).to_string(),
+
+        // 计算经验值百分比
+        xp: ((info.xp_since_last_level as f64 / info.xp_until_next_level as f64) * 100.0) as i64,
+
+        // 构建头像图片URL
+        img_url: format!("https://wegame.gtimg.com/g.26-r.c2d3c/helper/lol/assis/images/resources/usericon/{}.png",info.profile_icon_id).to_string()
+    })
+}
+
+/// 启动客户端并检查客户端信息获取是否成功
+///
+/// 该函数通过调用get_client_info()来验证客户端是否能够正常启动
+/// 并返回操作结果状态
+///
+/// # Returns
+///
+/// * `bool` - 如果客户端信息获取成功则返回true，否则返回false
+#[tauri::command]
+pub fn start_client() -> bool {
+    info!("客户端已成功启动!");
+    get_client_info().is_ok()
 }
 
 /// 获取游戏路径

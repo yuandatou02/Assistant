@@ -41,3 +41,8 @@ body {
     justify-content: space-between;
     flex-direction: column;
 }
+
+.avatarEffect {
+    animation: light 4s ease-in-out infinite;
+    transition: 0.5s;
+}

@@ -3,7 +3,7 @@
  * 定义了英雄ID和是否自动选择的状态信息
  */
 interface AutoChampion {
-    championId: number;
+    championId: string;
     isAuto: boolean;
 }
 

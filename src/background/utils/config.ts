@@ -4,11 +4,11 @@ import {invoke} from "@tauri-apps/api/core";
 // 默认配置
 const configSetting: ConfigSettingTypes = {
     autoPickChampion: {
-        championId: 157,
+        championId: "157",
         isAuto: false,
     },
     autoBanChampion: {
-        championId: 101,
+        championId: "101",
         isAuto: false,
     },
     autoIsOne: true,

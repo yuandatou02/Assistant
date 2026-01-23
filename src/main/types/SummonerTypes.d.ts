@@ -28,4 +28,5 @@ export interface SummonerInfo {
  */
 export interface SummonerData {
     summonerInfo: SummonerInfo | null;
+    rankList: string[] | null;
 }

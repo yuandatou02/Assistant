@@ -35,6 +35,25 @@
       <!--分界线-->
       <n-divider dashed style="margin: 14px 0 2px 0"/>
       <!--段位 荣誉等级-->
+      <n-list>
+        <n-list-item>
+          <n-space justify="space-between">
+            <n-tag class="w-32 justify-center" type="success" :bordered="false" :round="false">
+              单双 {{ summonerData.rankList?.[0] }}
+            </n-tag>
+            <n-tag class="w-32 justify-center" type="success" :bordered="false" :round="false">
+              灵活 {{ summonerData.rankList?.[1] }}
+            </n-tag>
+          </n-space>
+        </n-list-item>
+        <n-list-item>
+          <n-space justify="space-between">
+            <n-tag class="w-32 justify-center" type="warning" :bordered="false" :round="false">
+              云顶 {{ summonerData.rankList?.[2] }}
+            </n-tag>
+          </n-space>
+        </n-list-item>
+      </n-list>
     </n-card>
   </div>
   <div class="mainContent" v-else>
@@ -46,22 +65,27 @@
 import StartGame from "@/main/views/home/startGame.vue";
 import {onMounted, reactive} from "vue";
 import type {SummonerData} from "@/main/types/SummonerTypes";
-import {querySummonerInfo} from "@/main/api/aboutSummoner.ts";
+import {queryRankPoint, querySummonerInfo} from "@/main/api/aboutSummoner.ts";
 import {invoke} from "@tauri-apps/api/core";
-import {NAvatar, NButton, NCard, NDivider, NEllipsis, NProgress, NSpace, NTag} from "naive-ui";
+import {NAvatar, NButton, NCard, NDivider, NEllipsis, NList, NListItem, NProgress, NSpace, NTag} from "naive-ui";
 
 const summonerData = reactive<SummonerData>({
   summonerInfo: null,
+  rankList: [],
 });
 
 const init = async () => {
   const summonerAllInfo = await getCurrentSummonerInfo();
   summonerData.summonerInfo = summonerAllInfo.summonerInfo;
+  summonerData.rankList = summonerAllInfo.rankList;
 };
 
 const getCurrentSummonerInfo = async () => {
-  const summonerInfo = await querySummonerInfo();
-  return {summonerInfo};
+  const [summonerInfo, rankList] = await Promise.all([
+    querySummonerInfo(),
+    queryRankPoint()
+  ]);
+  return {summonerInfo, rankList};
 };
 
 onMounted(() => {

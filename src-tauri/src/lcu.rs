@@ -1,9 +1,12 @@
 pub mod lcu_event;
 mod listener;
 mod types;
+mod utils;
 
 use crate::lcu::listener::listen_client;
+use crate::lcu::types::rank_info::RankedInfo;
 use crate::lcu::types::summoner_info::{LcuSummonerInfo, SummonerInfo};
+use crate::lcu::utils::generate_rank_string;
 use crate::shaco::rest::RestClient;
 use crate::shaco::utils::get_client_info;
 use log::{error, info};
@@ -25,6 +28,54 @@ pub fn start_listener(app: AppHandle) {
     tokio::spawn(async move {
         listen_client(app).await;
     });
+}
+
+/// 获取用户在不同游戏模式下的排位积分信息
+///
+/// 该函数通过API端点获取用户的排位信息，并将其转换为包含三种游戏模式（单双排、灵活组排、云顶之弈）
+/// 排位等级的字符串数组。如果用户没有排位数据，则返回"未定级"。
+///
+/// # 参数
+/// * `endpoint` - API端点URL字符串引用，用于获取排位信息
+///
+/// # 返回值
+/// * `Result<[String; 3], Value>` - 成功时返回包含三个排位等级字符串的数组，
+///   分别对应单双排、灵活组排、云顶之弈模式；失败时返回Value::Null
+///
+/// # 错误处理
+/// 当网络请求失败、反序列化失败或客户端创建失败时，返回Value::Null
+#[tauri::command]
+pub async fn get_rank_point(endpoint: &str) -> Result<[String; 3], Value> {
+    info!("请求uri为:{}", endpoint);
+    let client = get_client().map_err(|_| Value::Null)?;
+    let value = client.get(endpoint).await.map_err(|_| Value::Null)?;
+    let value: RankedInfo = serde_json::from_value(value).map_err(|e| {
+        error!("反序列化 RankedInfo 失败: {:?}", e);
+        Value::Null
+    })?;
+    let queues = value.queues;
+    // 如果没有排位数据，返回 ["未定级"; 3] 的 JSON 数组
+    if queues.is_empty() {
+        Ok([
+            "未定级".to_string(),
+            "未定级".to_string(),
+            "未定级".to_string(),
+        ])
+    } else {
+        // 查找三种不同游戏模式的排位信息
+        let rank_solo = queues.iter().find(|q| q.queue_type == "RANKED_SOLO_5x5");
+        let rank_flex = queues.iter().find(|q| q.queue_type == "RANKED_FLEX_SR");
+        let rank_tft = queues.iter().find(|q| q.queue_type == "RANKED_TFT");
+        // 获取各模式的排名信息
+        let ranked_solo = generate_rank_string(rank_solo);
+        let ranked_flex_sr = generate_rank_string(rank_flex);
+        let ranked_tft = generate_rank_string(rank_tft);
+        info!(
+            "获取到的信息为:ranked_solo:{} ranked_flex_sr:{} ranked_tft:{}",
+            ranked_solo, ranked_flex_sr, ranked_tft
+        );
+        Ok([ranked_solo, ranked_flex_sr, ranked_tft])
+    }
 }
 
 /// 获取召唤师信息

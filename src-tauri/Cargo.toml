@@ -6,7 +6,7 @@ authors = ["Ikaros"]
 license = ""
 repository = ""
 edition = "2024"
-rust-version = "1.92.0"
+rust-version = "1.93.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

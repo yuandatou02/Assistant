@@ -2,7 +2,8 @@ mod lcu;
 mod shaco;
 
 use lcu::{
-    get_game_path, get_summoner_info, listen_client_start, start_client, start_game, start_listener,
+    get_game_path, get_rank_point, get_summoner_info, listen_client_start, start_client,
+    start_game, start_listener,
 };
 #[tokio::main]
 pub async fn run() {
@@ -23,7 +24,8 @@ pub async fn run() {
             get_game_path,
             start_listener,
             start_client,
-            get_summoner_info
+            get_summoner_info,
+            get_rank_point
         ])
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_process::init())

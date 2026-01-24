@@ -12,3 +12,12 @@ export const queryRankPoint = async (puuid?: string) => {
     const endpoint = puuid ? `/lol-ranked/v1/ranked-stats/${puuid}` : "/lol-ranked/v1/current-ranked-stats";
     return await invoke<string[]>("get_rank_point", {endpoint});
 };
+
+export const querySummonerHonor = async () => {
+    return await invoke<string>("get_summoner_honor");
+};
+
+export const queryMasteryChampList = async (summonerPuuid?: string) => {
+    const endpoint = summonerPuuid ? "/lol-champion-mastery/v1/local-player/champion-mastery" : `/lol-champion-mastery/v1/${summonerPuuid}/champion-mastery`;
+    return await invoke<string[][]>("get_mastery_champ_list", {endpoint});
+};

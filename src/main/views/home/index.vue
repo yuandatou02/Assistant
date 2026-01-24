@@ -51,9 +51,17 @@
             <n-tag class="w-32 justify-center" type="warning" :bordered="false" :round="false">
               云顶 {{ summonerData.rankList?.[2] }}
             </n-tag>
+            <n-tag class="w-32 justify-center" type="warning" :bordered="false" :round="false">
+              {{ summonerData.rankList?.[3] }}
+            </n-tag>
           </n-space>
         </n-list-item>
       </n-list>
+    </n-card>
+    <!--英雄熟练度-->
+    <n-card size="small" content-style="padding-top:10px" class="shadow h-100.5">
+      <mastery-champ v-if="summonerData.champLevel" :max-h="378" :puuid="''"
+                     :exist-champ-list="summonerData.champLevel"/>
     </n-card>
   </div>
   <div class="mainContent" v-else>
@@ -65,27 +73,38 @@
 import StartGame from "@/main/views/home/startGame.vue";
 import {onMounted, reactive} from "vue";
 import type {SummonerData} from "@/main/types/SummonerTypes";
-import {queryRankPoint, querySummonerInfo} from "@/main/api/aboutSummoner.ts";
+import {
+  queryMasteryChampList,
+  queryRankPoint,
+  querySummonerHonor,
+  querySummonerInfo
+} from "@/main/api/aboutSummoner.ts";
 import {invoke} from "@tauri-apps/api/core";
 import {NAvatar, NButton, NCard, NDivider, NEllipsis, NList, NListItem, NProgress, NSpace, NTag} from "naive-ui";
+import MasteryChamp from "@/main/components/masteryChamp.vue";
 
 const summonerData = reactive<SummonerData>({
   summonerInfo: null,
   rankList: [],
+  champLevel: null
 });
 
 const init = async () => {
   const summonerAllInfo = await getCurrentSummonerInfo();
   summonerData.summonerInfo = summonerAllInfo.summonerInfo;
   summonerData.rankList = summonerAllInfo.rankList;
+  summonerData.champLevel = summonerAllInfo.champLevel;
 };
 
 const getCurrentSummonerInfo = async () => {
-  const [summonerInfo, rankList] = await Promise.all([
+  const [summonerInfo, rankList, honorData, champLevel] = await Promise.all([
     querySummonerInfo(),
-    queryRankPoint()
+    queryRankPoint(),
+    querySummonerHonor(),
+    queryMasteryChampList()
   ]);
-  return {summonerInfo, rankList};
+  rankList.push(honorData);
+  return {summonerInfo, rankList, champLevel};
 };
 
 onMounted(() => {

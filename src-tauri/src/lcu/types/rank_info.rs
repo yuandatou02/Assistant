@@ -98,3 +98,19 @@ pub struct SeasonInfo {
     /// 下赛季开始时间（Unix 毫秒）
     pub next_season_start: i64,
 }
+
+/// 荣誉档案结构体，用于存储用户荣誉相关的配置信息
+/// 
+/// 该结构体包含了检查点、荣誉等级和奖励锁定状态等字段，
+/// 支持从camelCase格式的JSON数据进行反序列化
+#[derive(Debug,serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
+pub struct  HonorProfile{
+    /// 检查点数值，表示用户在荣誉系统中的进度位置
+    pub checkpoint: i64,
+    /// 荣誉等级，表示用户的荣誉级别
+    pub honor_level: i64,
+    /// 奖励锁定状态，true表示奖励被锁定，false表示奖励已解锁
+    pub rewards_locked: bool,
+}

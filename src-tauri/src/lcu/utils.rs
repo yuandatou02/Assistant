@@ -1,4 +1,7 @@
-use crate::lcu::types::rank_info::RankedEntry;
+use ahash::AHashMap;
+use once_cell::sync::Lazy;
+
+use crate::lcu::types::{champion_mastery::ChampionInfo, rank_info::RankedEntry};
 
 /// 英文 tier → 中文
 fn english_to_chinese(tier: &str) -> &'static str {
@@ -42,4 +45,12 @@ pub fn generate_rank_string(entry: Option<&RankedEntry>) -> String {
         deal_division(&e.division),
         e.league_points
     )
+}
+
+pub static CHAMP_DICT: Lazy<AHashMap<String, ChampionInfo>> = Lazy::new(|| {
+    serde_json::from_str(include_str!("../resource/champ_dict.json")).expect("解析 JSON 失败")
+});
+
+pub fn get_champion(id: String) -> Option<&'static ChampionInfo> {
+    CHAMP_DICT.get(&id)
 }

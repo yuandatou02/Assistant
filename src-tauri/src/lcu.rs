@@ -4,9 +4,10 @@ mod types;
 mod utils;
 
 use crate::lcu::listener::listen_client;
-use crate::lcu::types::rank_info::RankedInfo;
+use crate::lcu::types::champion_mastery::ChampionMastery;
+use crate::lcu::types::rank_info::{HonorProfile, RankedInfo};
 use crate::lcu::types::summoner_info::{LcuSummonerInfo, SummonerInfo};
-use crate::lcu::utils::generate_rank_string;
+use crate::lcu::utils::{generate_rank_string, get_champion};
 use crate::shaco::rest::RestClient;
 use crate::shaco::utils::get_client_info;
 use log::{error, info};
@@ -28,6 +29,76 @@ pub fn start_listener(app: AppHandle) {
     tokio::spawn(async move {
         listen_client(app).await;
     });
+}
+
+/// 获取 mastery 英雄列表
+/// 
+/// # 参数
+/// * `endpoint` - 请求的端点地址
+/// 
+/// # 返回值
+/// * `Result<Vec<Vec<String>>, Value>` - 成功时返回包含英雄信息的二维字符串向量，失败时返回 Value 类型错误
+#[tauri::command]
+pub async fn get_mastery_champ_list(endpoint: &str) -> Result<Vec<Vec<String>>, Value> {
+    info!("请求uri为:{}", endpoint);
+    let client = get_client().map_err(|_| Value::Null)?;
+    let value = client.get(endpoint).await.map_err(|_| Value::Null)?;
+    // info!("get_mastery_champ_list获取的value为:{:#?}", value);
+
+    // 反序列化响应数据为 ChampionMastery 结构体向量
+    let masteries: Vec<ChampionMastery> = serde_json::from_value(value).map_err(|e| {
+        error!("反序列化失败:{}", e);
+        Value::Null
+    })?;
+
+    // 处理英雄数据，提取前20个英雄并格式化为所需的数据结构
+    let result: Vec<Vec<String>> = masteries
+        .into_iter()
+        .take(20)
+        .filter_map(|item| {
+            let champ_id = item.champion_id.to_string();
+            let champ_info = get_champion(champ_id)?;
+            Some(vec![
+                format!(
+                    "https://game.gtimg.cn/images/lol/act/img/champion/{}.png",
+                    champ_info.alias
+                ),
+                format!("{}•{}", champ_info.label, champ_info.title),
+                format!(
+                    "英雄等级 {} / 熟练度 {}",
+                    item.champion_level, item.champion_points
+                ),
+            ])
+        })
+        .collect();
+    // info!("获取的英雄列表为:{:#?}", result);
+    Ok(result)
+}
+
+/// 获取召唤师荣誉信息
+///
+/// 该函数通过Tauri命令接口异步获取当前召唤师的荣誉等级和里程碑信息，
+/// 并将其格式化为字符串返回。
+///
+/// # Returns
+/// * `Result<String, Value>` - 成功时返回格式化的荣誉信息字符串，失败时返回Value::Null
+///   格式为："荣誉等级{level} 里程{checkpoint}"
+#[tauri::command]
+pub async fn get_summoner_honor() -> Result<String, Value> {
+    // 创建HTTP客户端并处理错误
+    let client = get_client().map_err(|_| Value::Null)?;
+    // 发起GET请求获取荣誉配置文件数据
+    let value = client
+        .get("/lol-honor-v2/v1/profile")
+        .await
+        .map_err(|_| Value::Null)?;
+    // 将响应数据反序列化为HonorProfile结构体
+    let result: HonorProfile = serde_json::from_value(value).map_err(|_| Value::Null)?;
+    // 格式化荣誉等级和里程碑信息并返回
+    Ok(format!(
+        "荣誉等级{} 里程{}",
+        result.honor_level, result.checkpoint
+    ))
 }
 
 /// 获取用户在不同游戏模式下的排位积分信息

@@ -60,8 +60,7 @@
     </n-card>
     <!--英雄熟练度-->
     <n-card size="small" content-style="padding-top:10px" class="shadow h-100.5">
-      <mastery-champ v-if="summonerData.champLevel" :max-h="378" :puuid="''"
-                     :exist-champ-list="summonerData.champLevel"/>
+      <mastery-champ v-if="summonerData.champLevel" :max-h="378" :exist-champ-list="summonerData.champLevel"/>
     </n-card>
   </div>
   <div class="mainContent" v-else>

@@ -6,11 +6,13 @@
         <Component :is="Component"/>
       </keep-alive>
     </router-view>
+    <navigation/>
   </div>
 </template>
 
 <script setup lang="ts">
 import dashboard from "@/main/components/dashboard.vue";
+import Navigation from "@/main/components/navigation.vue";
 </script>
 
 <style scoped>

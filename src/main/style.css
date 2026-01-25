@@ -46,3 +46,17 @@ body {
     animation: light 4s ease-in-out infinite;
     transition: 0.5s;
 }
+
+.navDiv {
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 48px;
+    border-top-left-radius: .75rem;
+    border-top-right-radius: .75rem;
+}

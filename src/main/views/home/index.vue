@@ -14,7 +14,8 @@
                 {{ summonerData.summonerInfo.name }}
               </n-ellipsis>
             </n-tag>
-            <n-button class="px-2!" :bordered="false" @click.prevent="true" type="success" size="small" round>
+            <n-button class="px-2!" :bordered="false" @click.prevent="openQueryMatchWindow" type="success" size="small"
+                      round>
               我的战绩
             </n-button>
           </div>
@@ -81,6 +82,7 @@ import {
 import {invoke} from "@tauri-apps/api/core";
 import {NAvatar, NButton, NCard, NDivider, NEllipsis, NList, NListItem, NProgress, NSpace, NTag} from "naive-ui";
 import MasteryChamp from "@/main/components/masteryChamp.vue";
+import {createQueryMatchWindow} from "@/background/utils/createWindow.ts";
 
 const summonerData = reactive<SummonerData>({
   summonerInfo: null,
@@ -104,6 +106,10 @@ const getCurrentSummonerInfo = async () => {
   ]);
   rankList.push(honorData);
   return {summonerInfo, rankList, champLevel};
+};
+
+const openQueryMatchWindow = async () => {
+  await createQueryMatchWindow();
 };
 
 onMounted(() => {

@@ -4,7 +4,8 @@
   "description": "enables the default permissions",
   "windows": [
     "background",
-    "mainWindow"
+    "mainWindow",
+    "queryMatchWindow"
   ],
   "permissions": [
     "core:default",

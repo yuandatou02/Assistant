@@ -2,7 +2,7 @@
 import {invoke} from "@tauri-apps/api/core";
 import type {SummonerInfo} from "@/main/types/SummonerTypes";
 
-export const querySummonerInfo = async (summonerId?: string) => {
+export const querySummonerInfo = async (summonerId?: number) => {
     const endpoint = summonerId ? `/lol-summoner/v1/summoners/${summonerId}` : "/lol-summoner/v1/current-summoner";
     return await invoke<SummonerInfo>("get_summoner_info", {endpoint});
 };

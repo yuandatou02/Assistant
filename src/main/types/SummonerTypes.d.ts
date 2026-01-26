@@ -16,7 +16,7 @@ export interface SummonerInfo {
     /** PUUID标识符 */
     puuid: string,
     /** 当前ID */
-    currentId: string,
+    currentId: number,
     /** 标签行（可选） */
     tagLine: string | undefined
 }

@@ -31,3 +31,8 @@ body {
     position: absolute;
     top: 0;
 }
+
+.avatarEffect {
+    animation: light 4s ease-in-out infinite;
+    transition: 0.5s;
+}
